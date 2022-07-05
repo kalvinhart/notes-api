@@ -9,6 +9,7 @@ namespace NotesApi.RequestHelpers
         public MappingProfiles()
         {
             CreateMap<CreateCategoryDTO, Category>();
+            CreateMap<EditCategoryDTO, Category>();
         }
     }
 }
