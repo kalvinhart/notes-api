@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NotesApi.Data;
@@ -61,6 +60,20 @@ namespace NotesApi.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<ActionResult> DeleteNote(int id)
+        {
+            var noteToDelete = await _context.Notes.FirstOrDefaultAsync(n => n.Id == id);
+            if (noteToDelete == null) return NotFound("Note does not exist.");
+
+            _context.Notes.Remove(noteToDelete);
+            _context.SaveChanges();
+
+            return NoContent();
+
         }
     }
 }
