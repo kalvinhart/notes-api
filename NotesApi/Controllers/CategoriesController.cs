@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using NotesApi.Data;
 using NotesApi.DTOs.Categories;
 using NotesApi.Models;
+using NotesApi.Repositories;
 
 namespace NotesApi.Controllers
 {
@@ -11,19 +12,19 @@ namespace NotesApi.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
 
-        public CategoriesController(DataContext context, IMapper mapper)
+        public CategoriesController(ICategoryRepository categoryRepository, IMapper mapper)
         {
-            _context = context;
+            _categoryRepository = categoryRepository;
             _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Category>>> GetAllCategories()
         {
-            var categories = await _context.Categories.ToListAsync();
+            var categories = await _categoryRepository.GetAllCategories();
             return Ok(categories);
         }
 
@@ -31,7 +32,7 @@ namespace NotesApi.Controllers
         [Route("{id}")]
         public async Task<IActionResult> GetCategory(int id)
         {
-            var category = await _context.Categories.Include(c => c.Notes).FirstAsync(c => c.Id == id);
+            var category = await _categoryRepository.GetCategory(id);
             if (category == null) return NotFound("Category does not exist");
 
             return Ok(category);
@@ -42,21 +43,17 @@ namespace NotesApi.Controllers
         {
             var newCategory = _mapper.Map<Category>(categoryDto);
 
-            await _context.Categories.AddAsync(newCategory);
-            await _context.SaveChangesAsync();
+            var category = await _categoryRepository.CreateCategory(newCategory);
 
-            return Ok(newCategory);
+            return Ok(category);
         }
 
         [HttpDelete]
         [Route("{id}")]
         public async Task<ActionResult> DeleteCategory(int id)
         {
-            var categoryToDelete = await _context.Categories.FindAsync(id);
-            if (categoryToDelete == null) return NotFound();
-
-            _context.Categories.Remove(categoryToDelete);
-            _context.SaveChanges();
+            var categoryToDelete = await _categoryRepository.DeleteCategory(id);
+            if (categoryToDelete == false) return NotFound();
 
             return Ok();
         }
