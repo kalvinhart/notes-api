@@ -1,8 +1,22 @@
+using Microsoft.EntityFrameworkCore;
+using NotesApi.Data;
+using NotesApi.RequestHelpers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+// Add database
+builder.Services.AddDbContext<DataContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+// Add Automapper
+builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
