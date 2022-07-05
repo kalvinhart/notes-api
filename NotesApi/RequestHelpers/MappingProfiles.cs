@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using NotesApi.DTOs.Categories;
+using NotesApi.DTOs.Notes;
 using NotesApi.Models;
 
 namespace NotesApi.RequestHelpers
@@ -10,6 +11,9 @@ namespace NotesApi.RequestHelpers
         {
             CreateMap<CreateCategoryDTO, Category>();
             CreateMap<EditCategoryDTO, Category>();
+
+            CreateMap<CreateNoteDTO, Note>();
+            CreateMap<UpdateNoteDTO, Note>();
         }
     }
 }
